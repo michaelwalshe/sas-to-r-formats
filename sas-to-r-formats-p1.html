@@ -8,7 +8,7 @@
 
 <meta name="author" content="Michael Walshe">
 
-<title>Mapping SAS Formats to R</title>
+<title>Mapping SAS Formats to R, Part 1</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -2608,7 +2608,7 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Mapping SAS Formats to R</h1>
+<h1 class="title">Mapping SAS Formats to R, Part 1</h1>
 <p class="subtitle lead">A Comprehensive Guide for the SAS Programmer</p>
 </div>
 
@@ -2634,12 +2634,12 @@ vertical-align: -.125em;
 <h1>Introduction to SAS Formats</h1>
 <p>SAS formats and informats are a swiss-army knife of data manipulation, providing in one package methods to:</p>
 <ul>
-<li>Read formatted data as a different type, for example to read a value of £1,000.00 as a numeric value.</li>
-<li>Apply a ‘mask’ to data. This means that you can change the way that data is displayed, without changing the underlying data (e.g. a value of <code>-0.6534</code> could print as <code>(65.3%)</code>)</li>
-<li>Group data into bins, based on custom conditions and logic</li>
 <li>Perform a look-up from one value to another</li>
+<li>Group data into bins, based on custom conditions and logic</li>
+<li>Apply a ‘mask’ to data. This means that you can change the way that data is displayed, without changing the underlying data (e.g. a value of <code>-0.6534</code> could print as <code>(65.3%)</code>)</li>
+<li>Read formatted data as a different type, for example to read a value of £1,000.00 as a numeric value</li>
 </ul>
-<p>Because of the sheer number of different use-cases for SAS formats, there is no single function or package in R which can fully replace it. However, this can be seen as a benefit, logically separating the different functionalities and making R easier to understand and use. In this article we’ll assess a few different methods for each of the above use-cases, starting with the simplest.</p>
+<p>Because of the sheer number of different use-cases for SAS formats, there is no single function or package in R which can fully replace it. However, this can be seen as a benefit, logically separating the different functionalities and making R easier to understand and use. In this article we’ll assess a few different methods for the first two use-cases.</p>
 </section>
 <section id="look-ups" class="level1">
 <h1>Look-ups</h1>
@@ -2685,32 +2685,32 @@ vertical-align: -.125em;
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">AN</td>
-<td style="text-align: right;">0.7939648</td>
+<td style="text-align: right;">0.9404673</td>
 <td style="text-align: left;">Antartica</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">AS</td>
-<td style="text-align: right;">0.0889377</td>
+<td style="text-align: right;">0.8830174</td>
 <td style="text-align: left;">Asia</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">E</td>
-<td style="text-align: right;">0.1197999</td>
+<td style="text-align: right;">0.4089769</td>
 <td style="text-align: left;">Europe</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">NA</td>
-<td style="text-align: right;">0.9265060</td>
+<td style="text-align: right;">0.0455565</td>
 <td style="text-align: left;">North America</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">SA</td>
-<td style="text-align: right;">0.7960311</td>
+<td style="text-align: right;">0.2875775</td>
 <td style="text-align: left;">South America</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">SA</td>
-<td style="text-align: right;">0.7539247</td>
+<td style="text-align: right;">0.7883051</td>
 <td style="text-align: left;">South America</td>
 </tr>
 </tbody>
@@ -2813,211 +2813,10 @@ vertical-align: -.125em;
 </div>
 </div>
 </section>
-<section id="masks" class="level1">
-<h1>Masks</h1>
-<p>Using a format as a “mask” for data is the most common use-case in SAS, keeping the underlying data the same but applying formatting when it is displayed. There are several different methods we can use to replicate this in R.</p>
-<section id="method-1-base-r" class="level2">
-<h2 class="anchored" data-anchor-id="method-1-base-r">Method 1: Base R</h2>
-<p>Using Base R, there are several different functions that can format data.</p>
-<p>The first we’ll use is the <code>format()</code> function, which can format any R object for printing, but is typically used for numeric vectors and has a large set of options:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>numbers <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">10</span>, <span class="sc">-</span><span class="dv">1000000</span>, <span class="dv">1000000</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(numbers, <span class="at">justify=</span><span class="st">&quot;right&quot;</span>, <span class="at">width=</span><span class="st">&quot;10&quot;</span>, <span class="at">big.mark=</span><span class="st">&quot;,&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt;  [1] &quot; 929,363.197&quot; &quot;  -7,959.384&quot; &quot; 426,953.327&quot; &quot;-380,798.904&quot; &quot; 205,541.161&quot;
-#&gt;  [6] &quot;-236,666.038&quot; &quot;-584,542.795&quot; &quot; 618,335.413&quot; &quot; 736,137.867&quot; &quot; 203,548.389&quot;</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span>(numbers, <span class="at">digits=</span><span class="dv">3</span>, <span class="at">scientific=</span><span class="cn">TRUE</span>) <span class="sc">|&gt;</span> <span class="fu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt;  [1] &quot; 9.29e+05&quot; &quot;-7.96e+03&quot; &quot; 4.27e+05&quot; &quot;-3.81e+05&quot; &quot; 2.06e+05&quot; &quot;-2.37e+05&quot;
-#&gt;  [7] &quot;-5.85e+05&quot; &quot; 6.18e+05&quot; &quot; 7.36e+05&quot; &quot; 2.04e+05&quot;</code></pre>
-</div>
-</div>
-<p>Alternatively, the <code>sprintf</code> function provides a familiar interface to those used to C style formatting, for more detail run <code>?sprintf</code>.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sprintf</span>(<span class="st">&quot;$%.2f&quot;</span>, numbers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt;  [1] &quot;$929363.20&quot;  &quot;$-7959.38&quot;   &quot;$426953.33&quot;  &quot;$-380798.90&quot; &quot;$205541.16&quot; 
-#&gt;  [6] &quot;$-236666.04&quot; &quot;$-584542.79&quot; &quot;$618335.41&quot;  &quot;$736137.87&quot;  &quot;$203548.39&quot;</code></pre>
-</div>
-</div>
-</section>
-<section id="method-2-scales" class="level2">
-<h2 class="anchored" data-anchor-id="method-2-scales">Method 2: <a href="https://scales.r-lib.org/"><code>{scales}</code></a></h2>
-<p>The <code>{scales}</code> package is used by <code>{ggplot2}</code> to scale data for graphs, but it also includes some useful formatting functions that can help with common formats. For example:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>scales<span class="sc">::</span><span class="fu">label_dollar</span>(<span class="at">prefix=</span><span class="st">&quot;£&quot;</span>, <span class="at">style_negative=</span><span class="st">&quot;parens&quot;</span>)(numbers)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt;  [1] &quot;£929,363&quot;   &quot;(£7,959)&quot;   &quot;£426,953&quot;   &quot;(£380,799)&quot; &quot;£205,541&quot;  
-#&gt;  [6] &quot;(£236,666)&quot; &quot;(£584,543)&quot; &quot;£618,335&quot;   &quot;£736,138&quot;   &quot;£203,548&quot;</code></pre>
-</div>
-</div>
-<p>Note that all the <code>scale::label_...</code> functions return another function, and we’ve passed the <code>numbers</code> vector into this. There are label functions for currency, percents, dates, time, mathematics, SI units, p-values, and more! If a particular label is used frequently in your code, it may be helpful to assign it to a helper function</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>percent <span class="ot">&lt;-</span> scales<span class="sc">::</span><span class="fu">label_percent</span>(</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">accuracy=</span><span class="fl">0.1</span>,</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">suffix=</span><span class="st">&quot; %&quot;</span>,</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">decimal.mark=</span><span class="st">&quot;,&quot;</span>,</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">style_negative=</span><span class="st">&quot;parens&quot;</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="fu">percent</span>(<span class="fu">runif</span>(<span class="dv">5</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt; [1] &quot;(87,2 %)&quot; &quot;40,3 %&quot;   &quot;(15,3 %)&quot; &quot;36,5 %&quot;   &quot;(42,4 %)&quot;</code></pre>
-</div>
-</div>
-</section>
-<section id="method-3-formatttable" class="level2">
-<h2 class="anchored" data-anchor-id="method-3-formatttable">Method 3: <a href="https://renkun-ken.github.io/formattable/"><code>{formatttable}</code></a></h2>
-<p>All the examples covered so far have 1 key difference to SAS formats, they return the data converted to a new format, rather than the original data with a mask that applies when printing. For this, we can use <code>{formattable}</code>. This lets us apply formats to a vector or data.frame, and then continue to work with them as if they were standard R vectors. Only when it comes time to print does the format get applied.</p>
-<p>For example:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>values <span class="ot">&lt;-</span> <span class="fu">runif</span>(<span class="dv">5</span>, <span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>percs <span class="ot">&lt;-</span> formattable<span class="sc">::</span><span class="fu">percent</span>(values)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt; [1] 0.35%   40.76%  -99.71% -20.26% 77.46%</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(percs <span class="sc">**</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt; [1] 0.00%  16.62% 99.43% 4.10%  60.00%</code></pre>
-</div>
-</div>
-<p>This is not limited to standard numeric formats, for which <code>{formattable}</code> includes methods for: digits, commas, percents, accounting, currency, and scientific notation. There are also advanced methods for styling the output table, for example conditional formatting similar to Excel output:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>formattable<span class="sc">::</span><span class="fu">formattable</span>(</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  my_data,</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">measure=</span>formattable<span class="sc">::</span><span class="fu">color_tile</span>(<span class="st">&quot;white&quot;</span>, <span class="st">&quot;pink&quot;</span>))</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="cell-output-display">
-
-<table class="table table-condensed">
-<thead>
-<tr>
-<th style="text-align:right;">
-region_code
-</th>
-<th style="text-align:right;">
-measure
-</th>
-<th style="text-align:right;">
-region_full
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-SA
-</td>
-<td style="text-align:right;">
-<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffc9d3">0.79603110</span>
-</td>
-<td style="text-align:right;">
-South America
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-SA
-</td>
-<td style="text-align:right;">
-<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffccd5">0.75392472</span>
-</td>
-<td style="text-align:right;">
-South America
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-E
-</td>
-<td style="text-align:right;">
-<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #fffcfd">0.11979992</span>
-</td>
-<td style="text-align:right;">
-Europe
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-AS
-</td>
-<td style="text-align:right;">
-<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">0.08893773</span>
-</td>
-<td style="text-align:right;">
-Asia
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-AN
-</td>
-<td style="text-align:right;">
-<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffc9d3">0.79396479</span>
-</td>
-<td style="text-align:right;">
-Antartica
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffc0cb">0.92650600</span>
-</td>
-<td style="text-align:right;">
-North America
-</td>
-</tr>
-</tbody>
-
-</table>
-</div>
-</div>
-<p>Note however that these formats will not be persisted unless the data is saved in an Rdata or RDS format.</p>
-</section>
-</section>
-<section id="reading-in-data" class="level1">
-<h1>Reading in Data</h1>
-<p>The final use of a SAS format that we’d like to replicate is reading in character data as numeric. The simplest way to do this is using <code>parse_number</code> from <a href="https://readr.tidyverse.org/"><code>{readr}</code></a>, which provides a method to ignore non-numeric data in a column and attempt to parse it as a number:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">parse_number</span>(<span class="fu">c</span>(<span class="st">&quot;£1,000.00&quot;</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt; [1] 1000</code></pre>
-</div>
-</div>
-<p>And for date formats, <code>{readr}</code> also provides <code>readr::parse_date</code> or <code>readr::parse_datetime</code>.</p>
-<p>However, when it comes to more complex formats (e.g. “(82.5%)”) this will not take into account that it is a percentage and negative, and so more custom methods must be used:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>values <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;(82.5%)&quot;</span>, <span class="st">&quot;2%&quot;</span>, <span class="st">&quot;28.55%&quot;</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>my_format <span class="ot">&lt;-</span> <span class="cf">function</span>(x){</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  x <span class="sc">|&gt;</span> </span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    stringr<span class="sc">::</span><span class="fu">str_replace_all</span>(<span class="fu">c</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">(&quot;</span> <span class="ot">=</span> <span class="st">&quot;-&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">)&quot;</span> <span class="ot">=</span> <span class="st">&quot;&quot;</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>    readr<span class="sc">::</span><span class="fu">parse_number</span>() <span class="sc">/</span> <span class="dv">100</span></span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="fu">my_format</span>(values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>#&gt; [1] -0.8250  0.0200  0.2855</code></pre>
-</div>
-</div>
-</section>
 <section id="honourable-mentions" class="level1">
 <h1>Honourable Mentions</h1>
 <ul>
-<li><p>An incredibly useful package for formatting tables for output is <a href="https://gt.rstudio.com/index.html"><code>{gt}</code></a>. This also includes a large number of formatting functions; however these can only be used at the point of printing the data and you cannot extract the formatted data, therefore this was not featured.</p></li>
-<li><p>An excellent package that provides a very large number of built-in formats is <a href="https://cran.r-project.org/web/packages/numform/index.html"><code>{numform}</code></a>. This had the most included formats of all packages considered, however due to its relatively low usage (~1.2K downloads per month) the <code>{scales}</code> package was featured instead.</p></li>
-<li><p>Another package to mention is <a href="https://fmtr.r-sassy.org/articles/fmtr.html"><code>{fmtr}</code></a>, which is designed to try and replicate the experience of SAS user-defined formats in R, including conditions and format catalogues. However, it also has limited popularity, and further it’s best practice to try to write idiomatic R rather than replicate SAS exactly.</p></li>
-<li><p>The <code>{formattable}</code> package has unreleased functions for parsing different formats from text, for example <code>parse_accounting</code>. On release, these may be a good method to read in formatted data.</p></li>
+<li>A useful package to mention is <a href="https://fmtr.r-sassy.org/articles/fmtr.html"><code>{fmtr}</code></a>, which is designed to try and replicate the experience of SAS user-defined formats in R, including conditions and format catalogues. However, it also has limited popularity,and it is best practice to try to write idiomatic R rather than to replicate SAS exactly.</li>
 </ul>
 </section>
 
